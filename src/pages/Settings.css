@@ -2,45 +2,99 @@
     min-height: 100vh;
 }
 
-.settings-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-6);
+/* New Layout Styles */
+.settings-container {
+    display: flex;
+    gap: var(--spacing-8);
+    align-items: flex-start;
+    padding: var(--spacing-6) var(--spacing-8);
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-@media (max-width: 1200px) {
-    .settings-grid {
-        grid-template-columns: 1fr;
+.settings-sidebar {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    flex-shrink: 0;
+}
+
+.settings-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.settings-nav-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.settings-nav-item.active {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.settings-content {
+    flex: 1;
+    min-width: 0;
+    /* Prevent overflow */
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
+/* Original styles adapted */
 .settings-section {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-6);
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
 }
 
 .section-header {
     display: flex;
+    align-items: center;
     gap: var(--spacing-4);
     padding-bottom: var(--spacing-4);
     border-bottom: 1px solid var(--border-color);
 }
 
+/* ... keep existing form styles ... */
 .section-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--accent-primary);
-    border-radius: var(--radius-lg);
-    color: white;
-    flex-shrink: 0;
+    display: none;
+    /* Hide icon in content since it's in tabs now */
 }
 
 .section-title {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     font-weight: 600;
     margin: 0;
 }
@@ -63,12 +117,40 @@
     gap: var(--spacing-4);
 }
 
+/* Reponsive */
+@media (max-width: 1024px) {
+    .settings-container {
+        flex-direction: column;
+        padding: var(--spacing-4);
+    }
+
+    .settings-sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: var(--spacing-2);
+    }
+
+    .settings-nav-item {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+}
+
 @media (max-width: 640px) {
     .form-row {
         grid-template-columns: 1fr;
     }
+
+    .settings-sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: var(--spacing-2);
+    }
 }
 
+/* Keep previous form styles below */
 .appearance-options {
     display: flex;
     flex-direction: column;
@@ -112,13 +194,7 @@
     font-weight: 500;
 }
 
-.data-options {
-    display: flex;
-    gap: var(--spacing-4);
-    flex-wrap: wrap;
-}
-
-/* Logo Upload Styles */
+/* Logo Upload & Bank Styles (Unchanged) */
 .logo-upload-area {
     display: flex;
     flex-direction: column;
@@ -194,7 +270,6 @@
     transform: scale(1.1);
 }
 
-/* Bank Accounts Styles */
 .bank-accounts-list {
     display: flex;
     flex-direction: column;
@@ -238,6 +313,7 @@
     justify-content: space-between;
     padding: var(--spacing-4);
     background: var(--bg-glass);
+    /* In case nested */
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     transition: all var(--transition-fast);

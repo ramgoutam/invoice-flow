@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Search, Bell, Moon, Sun, Menu } from 'lucide-react';
 import './Header.css';
 
-function Header({ title }) {
+function Header({ title, children }) {
     const { state, dispatch } = useApp();
     const [searchOpen, setSearchOpen] = useState(false);
 
@@ -25,6 +25,8 @@ function Header({ title }) {
             </div>
 
             <div className="header-right">
+                {children}
+
                 <div className={`search-container ${searchOpen ? 'open' : ''}`}>
                     <button className="btn-icon" onClick={() => setSearchOpen(!searchOpen)}>
                         <Search size={20} />

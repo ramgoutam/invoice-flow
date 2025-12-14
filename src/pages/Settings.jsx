@@ -42,6 +42,8 @@ function Settings() {
         }));
     }, [settings]);
 
+    const [activeTab, setActiveTab] = useState('business');
+
     const [saved, setSaved] = useState(false);
     const [bankModalOpen, setBankModalOpen] = useState(false);
     const [editingBank, setEditingBank] = useState(null);
@@ -163,6 +165,13 @@ function Settings() {
         }
     };
 
+    const tabs = [
+        { id: 'business', label: 'Business Profile', icon: Building },
+        { id: 'invoices', label: 'Invoice Settings', icon: FileText },
+        { id: 'banking', label: 'Bank Accounts', icon: CreditCard },
+        { id: 'appearance', label: 'Appearance', icon: theme === 'dark' ? Moon : Sun },
+    ];
+
     return (
         <div className="settings-page">
             <Header title="Settings">
@@ -172,253 +181,262 @@ function Settings() {
                 </button>
             </Header>
 
-            <div className="page-container">
-                <div className="settings-grid">
+            <div className="settings-container">
+                {/* Sidebar Navigation */}
+                <div className="settings-sidebar">
+                    {tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            className={`settings-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            <tab.icon size={18} />
+                            <span>{tab.label}</span>
+                        </button>
+                    ))}
+                </div>
 
-                    {/* Business Profile Section */}
-                    <div className="settings-section">
-                        <div className="section-header">
-                            <div className="section-icon">
-                                <Building size={20} />
-                            </div>
-                            <div>
-                                <h3 className="section-title">Business Profile</h3>
-                                <p className="section-description">Manage your company details and branding</p>
-                            </div>
-                        </div>
+                {/* Content Area */}
+                <div className="settings-content">
 
-                        <div className="settings-form">
-                            {/* Logo Upload */}
-                            <div className="logo-upload-area">
-                                <label className="input-label">Business Logo</label>
-                                {formData.businessLogo ? (
-                                    <div className="logo-preview">
-                                        <img src={formData.businessLogo} alt="Business Logo" />
-                                        <button className="remove-logo-btn" onClick={removeLogo}>
-                                            <X size={14} />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div
-                                        className="logo-upload-placeholder"
-                                        onClick={() => fileInputRef.current.click()}
-                                    >
-                                        <Image size={24} />
-                                        <span>Click to upload logo</span>
-                                        <span className="upload-hint">Max 2MB. JPG, PNG</span>
-                                    </div>
-                                )}
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    ref={fileInputRef}
-                                    onChange={handleLogoUpload}
-                                    style={{ display: 'none' }}
-                                />
-                                {uploading && <div className="text-sm text-primary flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Uploading...</div>}
-                            </div>
-
-                            <div className="input-group">
-                                <label className="input-label">Company Name</label>
-                                <input
-                                    type="text"
-                                    className="input"
-                                    value={formData.businessName}
-                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="form-row">
-                                <div className="input-group">
-                                    <label className="input-label">Email Address</label>
-                                    <input
-                                        type="email"
-                                        className="input"
-                                        value={formData.businessEmail}
-                                        onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
-                                    />
-                                </div>
-                                <div className="input-group">
-                                    <label className="input-label">Phone Number</label>
-                                    <input
-                                        type="tel"
-                                        className="input"
-                                        value={formData.businessPhone}
-                                        onChange={(e) => setFormData({ ...formData, businessPhone: e.target.value })}
-                                    />
+                    {/* Business Profile */}
+                    {activeTab === 'business' && (
+                        <div className="settings-section fade-in">
+                            <div className="section-header">
+                                <div>
+                                    <h3 className="section-title">Business Profile</h3>
+                                    <p className="section-description">Manage your company details and branding</p>
                                 </div>
                             </div>
 
-                            <div className="input-group">
-                                <label className="input-label">Address</label>
-                                <textarea
-                                    className="input"
-                                    rows="3"
-                                    value={formData.businessAddress}
-                                    onChange={(e) => setFormData({ ...formData, businessAddress: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                            <div className="settings-form">
+                                {/* Logo Upload */}
+                                <div className="logo-upload-area">
+                                    <label className="input-label">Business Logo</label>
+                                    {formData.businessLogo ? (
+                                        <div className="logo-preview">
+                                            <img src={formData.businessLogo} alt="Business Logo" />
+                                            <button className="remove-logo-btn" onClick={removeLogo}>
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            className="logo-upload-placeholder"
+                                            onClick={() => fileInputRef.current.click()}
+                                        >
+                                            <Image size={24} />
+                                            <span>Click to upload logo</span>
+                                            <span className="upload-hint">Max 2MB. JPG, PNG</span>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        ref={fileInputRef}
+                                        onChange={handleLogoUpload}
+                                        style={{ display: 'none' }}
+                                    />
+                                    {uploading && <div className="text-sm text-primary flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Uploading...</div>}
+                                </div>
 
-                    {/* Invoice Settings */}
-                    <div className="settings-section">
-                        <div className="section-header">
-                            <div className="section-icon">
-                                <FileText size={20} />
-                            </div>
-                            <div>
-                                <h3 className="section-title">Invoice Settings</h3>
-                                <p className="section-description">Configure defaults for your invoices</p>
-                            </div>
-                        </div>
-
-                        <div className="settings-form">
-                            <div className="form-row">
                                 <div className="input-group">
-                                    <label className="input-label">Invoice Prefix</label>
+                                    <label className="input-label">Company Name</label>
                                     <input
                                         type="text"
                                         className="input"
-                                        value={formData.invoicePrefix}
-                                        onChange={(e) => setFormData({ ...formData, invoicePrefix: e.target.value })}
+                                        value={formData.businessName}
+                                        onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                                     />
                                 </div>
+
+                                <div className="form-row">
+                                    <div className="input-group">
+                                        <label className="input-label">Email Address</label>
+                                        <input
+                                            type="email"
+                                            className="input"
+                                            value={formData.businessEmail}
+                                            onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            className="input"
+                                            value={formData.businessPhone}
+                                            onChange={(e) => setFormData({ ...formData, businessPhone: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
                                 <div className="input-group">
-                                    <label className="input-label">Next Number</label>
-                                    <input
-                                        type="number"
+                                    <label className="input-label">Address</label>
+                                    <textarea
                                         className="input"
-                                        value={formData.invoiceNextNumber}
-                                        onChange={(e) => setFormData({ ...formData, invoiceNextNumber: parseInt(e.target.value) || 0 })}
+                                        rows="3"
+                                        value={formData.businessAddress}
+                                        onChange={(e) => setFormData({ ...formData, businessAddress: e.target.value })}
                                     />
                                 </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="input-group">
-                                    <label className="input-label">Default Currency</label>
-                                    <select
-                                        className="input"
-                                        value={formData.defaultCurrency}
-                                        onChange={(e) => setFormData({ ...formData, defaultCurrency: e.target.value })}
-                                    >
-                                        {currencies.map(curr => (
-                                            <option key={curr.code} value={curr.code}>
-                                                {curr.symbol} {curr.code}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="input-group">
-                                    <label className="input-label">Default Tax Rate (%)</label>
-                                    <input
-                                        type="number"
-                                        className="input"
-                                        value={formData.defaultTaxRate}
-                                        onChange={(e) => setFormData({ ...formData, defaultTaxRate: parseFloat(e.target.value) || 0 })}
-                                    />
-                                </div>
-                            </div>
-                            <div className="input-group">
-                                <label className="input-label">Payment Terms (Days)</label>
-                                <input
-                                    type="number"
-                                    className="input"
-                                    value={formData.paymentTerms}
-                                    onChange={(e) => setFormData({ ...formData, paymentTerms: parseFloat(e.target.value) || 0 })}
-                                />
                             </div>
                         </div>
-                    </div>
+                    )}
+
+                    {/* Invoice Settings */}
+                    {activeTab === 'invoices' && (
+                        <div className="settings-section fade-in">
+                            <div className="section-header">
+                                <div>
+                                    <h3 className="section-title">Invoice Settings</h3>
+                                    <p className="section-description">Configure defaults for your invoices</p>
+                                </div>
+                            </div>
+
+                            <div className="settings-form">
+                                <div className="form-row">
+                                    <div className="input-group">
+                                        <label className="input-label">Invoice Prefix</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            value={formData.invoicePrefix}
+                                            onChange={(e) => setFormData({ ...formData, invoicePrefix: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Next Number</label>
+                                        <input
+                                            type="number"
+                                            className="input"
+                                            value={formData.invoiceNextNumber}
+                                            onChange={(e) => setFormData({ ...formData, invoiceNextNumber: parseInt(e.target.value) || 0 })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="input-group">
+                                        <label className="input-label">Default Currency</label>
+                                        <select
+                                            className="input"
+                                            value={formData.defaultCurrency}
+                                            onChange={(e) => setFormData({ ...formData, defaultCurrency: e.target.value })}
+                                        >
+                                            {currencies.map(curr => (
+                                                <option key={curr.code} value={curr.code}>
+                                                    {curr.symbol} {curr.code}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Default Tax Rate (%)</label>
+                                        <input
+                                            type="number"
+                                            className="input"
+                                            value={formData.defaultTaxRate}
+                                            onChange={(e) => setFormData({ ...formData, defaultTaxRate: parseFloat(e.target.value) || 0 })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="input-group">
+                                    <label className="input-label">Payment Terms (Days)</label>
+                                    <input
+                                        type="number"
+                                        className="input"
+                                        value={formData.paymentTerms}
+                                        onChange={(e) => setFormData({ ...formData, paymentTerms: parseFloat(e.target.value) || 0 })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Bank Accounts */}
-                    <div className="settings-section">
-                        <div className="section-header">
-                            <div className="section-icon">
-                                <CreditCard size={20} />
-                            </div>
-                            <div>
-                                <h3 className="section-title">Bank Accounts</h3>
-                                <p className="section-description">Manage accounts for receiving payments</p>
-                            </div>
-                        </div>
-
-                        <div className="bank-accounts-list">
-                            {bankAccounts.length === 0 ? (
-                                <div className="empty-bank-state" onClick={() => openBankModal()}>
-                                    <Wallet size={32} />
-                                    <p>No bank accounts added</p>
-                                    <span>Click to add your first bank account</span>
+                    {activeTab === 'banking' && (
+                        <div className="settings-section fade-in">
+                            <div className="section-header">
+                                <div>
+                                    <h3 className="section-title">Bank Accounts</h3>
+                                    <p className="section-description">Manage accounts for receiving payments</p>
                                 </div>
-                            ) : (
-                                <>
-                                    {bankAccounts.map(bank => (
-                                        <div key={bank.id} className="bank-account-card">
-                                            <div className="bank-info">
-                                                <span className="bank-name">{bank.bankName}</span>
-                                                <div className="bank-details">
-                                                    <span>{bank.accountName}</span>
-                                                    <span>•</span>
-                                                    <span>{bank.accountNumber}</span>
+                            </div>
+
+                            <div className="bank-accounts-list">
+                                {bankAccounts.length === 0 ? (
+                                    <div className="empty-bank-state" onClick={() => openBankModal()}>
+                                        <Wallet size={32} />
+                                        <p>No bank accounts added</p>
+                                        <span>Click to add your first bank account</span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {bankAccounts.map(bank => (
+                                            <div key={bank.id} className="bank-account-card">
+                                                <div className="bank-info">
+                                                    <span className="bank-name">{bank.bankName}</span>
+                                                    <div className="bank-details">
+                                                        <span>{bank.accountName}</span>
+                                                        <span>•</span>
+                                                        <span>{bank.accountNumber}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="bank-actions">
+                                                    <span className="bank-currency">{bank.currency}</span>
+                                                    <button className="btn-icon sm" onClick={() => openBankModal(bank)}>
+                                                        <Edit2 size={14} />
+                                                    </button>
+                                                    <button className="btn-icon sm" onClick={() => handleDeleteBank(bank.id)}>
+                                                        <Trash2 size={14} />
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <div className="bank-actions">
-                                                <span className="bank-currency">{bank.currency}</span>
-                                                <button className="btn-icon sm" onClick={() => openBankModal(bank)}>
-                                                    <Edit2 size={14} />
-                                                </button>
-                                                <button className="btn-icon sm" onClick={() => handleDeleteBank(bank.id)}>
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    <button className="btn btn-secondary btn-sm" onClick={() => openBankModal()}>
-                                        <Plus size={16} /> Add Another Account
-                                    </button>
-                                </>
-                            )}
+                                        ))}
+                                        <button className="btn btn-secondary btn-sm" onClick={() => openBankModal()}>
+                                            <Plus size={16} /> Add Another Account
+                                        </button>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Appearance */}
-                    <div className="settings-section">
-                        <div className="section-header">
-                            <div className="section-icon">
-                                {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+                    {activeTab === 'appearance' && (
+                        <div className="settings-section fade-in">
+                            <div className="section-header">
+                                <div>
+                                    <h3 className="section-title">Appearance</h3>
+                                    <p className="section-description">Customize the interface look and feel</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="section-title">Appearance</h3>
-                                <p className="section-description">Customize the interface look and feel</p>
+
+                            <div className="appearance-options">
+                                <div className="theme-option">
+                                    <button
+                                        className={`theme-preview ${theme === 'light' ? 'active' : ''}`}
+                                        onClick={() => dispatch({ type: 'SET_THEME', payload: 'light' })}
+                                    >
+                                        <Sun size={24} />
+                                        <span>Light Mode</span>
+                                    </button>
+                                    <button
+                                        className={`theme-preview ${theme === 'dark' ? 'active' : ''}`}
+                                        onClick={() => dispatch({ type: 'SET_THEME', payload: 'dark' })}
+                                    >
+                                        <Moon size={24} />
+                                        <span>Dark Mode</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-
-                        <div className="appearance-options">
-                            <div className="theme-option">
-                                <button
-                                    className={`theme-preview ${theme === 'light' ? 'active' : ''}`}
-                                    onClick={() => dispatch({ type: 'SET_THEME', payload: 'light' })}
-                                >
-                                    <Sun size={24} />
-                                    <span>Light Mode</span>
-                                </button>
-                                <button
-                                    className={`theme-preview ${theme === 'dark' ? 'active' : ''}`}
-                                    onClick={() => dispatch({ type: 'SET_THEME', payload: 'dark' })}
-                                >
-                                    <Moon size={24} />
-                                    <span>Dark Mode</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-
+                    )}
 
                 </div>
             </div>
 
-            {/* Bank Account Modal */}
+            {/* Bank Account Modal (Unchanged) */}
             {bankModalOpen && (
                 <div className="modal-overlay">
                     <div className="modal-content glass-card">
