@@ -1,0 +1,101 @@
+.recurring-page {
+    min-height: 100vh;
+}
+
+.recurring-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--spacing-6);
+}
+
+.recurring-card {
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition-base);
+}
+
+.recurring-card.inactive {
+    opacity: 0.6;
+}
+
+.recurring-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recurring-frequency {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--accent-primary);
+    background: rgba(59, 130, 246, 0.1);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-full);
+}
+
+.recurring-body {
+    padding: var(--spacing-4) 0;
+    flex: 1;
+}
+
+.recurring-client {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--spacing-2);
+}
+
+.recurring-description {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    margin-bottom: var(--spacing-3);
+}
+
+.recurring-amount {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+.recurring-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+}
+
+.recurring-next {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+}
+
+.recurring-actions {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+@media (max-width: 640px) {
+    .recurring-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recurring-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .recurring-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

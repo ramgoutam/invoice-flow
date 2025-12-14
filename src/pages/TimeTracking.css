@@ -1,0 +1,234 @@
+.time-tracking-page {
+    min-height: 100vh;
+}
+
+.timer-section {
+    margin-bottom: var(--spacing-6);
+}
+
+.timer-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-6);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-6);
+}
+
+.timer-time {
+    font-size: 4rem;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--accent-primary);
+}
+
+.timer-controls {
+    display: flex;
+    gap: var(--spacing-3);
+}
+
+.timer-btn {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: white;
+    transition: all var(--transition-fast);
+}
+
+.timer-btn.start {
+    background: var(--success);
+}
+
+.timer-btn.start:hover {
+    background: #059669;
+    transform: scale(1.05);
+}
+
+.timer-btn.pause {
+    background: var(--warning);
+}
+
+.timer-btn.pause:hover {
+    background: #d97706;
+}
+
+.timer-btn.stop {
+    background: var(--error);
+}
+
+.timer-btn.stop:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.timer-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.timer-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.timer-description {
+    font-size: var(--font-size-lg);
+    padding: var(--spacing-4);
+}
+
+.timer-options {
+    display: flex;
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+}
+
+.timer-options .input {
+    flex: 1;
+    min-width: 150px;
+}
+
+.input-group-inline {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 0 var(--spacing-3);
+    color: var(--text-secondary);
+}
+
+.input-group-inline .input {
+    border: none;
+    background: transparent;
+    width: 80px;
+    padding: var(--spacing-3) var(--spacing-2);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-primary);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+}
+
+@media (max-width: 640px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.summary-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.summary-icon-small {
+    color: var(--accent-primary);
+}
+
+.summary-stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+}
+
+.summary-stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+}
+
+.time-entries-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.time-entry {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4);
+    border-bottom: 1px solid var(--border-color);
+    transition: background var(--transition-fast);
+}
+
+.time-entry:last-child {
+    border-bottom: none;
+}
+
+.time-entry:hover {
+    background: var(--bg-glass);
+}
+
+.time-entry-info {
+    flex: 1;
+}
+
+.time-entry-description {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-1);
+}
+
+.time-entry-meta {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.time-entry-duration {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 80px;
+    text-align: right;
+}
+
+.time-entry-amount {
+    font-weight: 600;
+    color: var(--success);
+    min-width: 80px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .timer-display {
+        flex-direction: column;
+        gap: var(--spacing-4);
+        text-align: center;
+    }
+
+    .timer-time {
+        font-size: 2.5rem;
+    }
+
+    .time-entry {
+        flex-wrap: wrap;
+    }
+
+    .time-entry-duration,
+    .time-entry-amount {
+        min-width: auto;
+    }
+}

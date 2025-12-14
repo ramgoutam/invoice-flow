@@ -1,0 +1,87 @@
+.reports-page {
+    min-height: 100vh;
+}
+
+.report-actions {
+    display: flex;
+    gap: var(--spacing-3);
+}
+
+.report-actions .input {
+    width: auto;
+}
+
+.reports-stats {
+    margin-bottom: var(--spacing-6);
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-6);
+}
+
+@media (max-width: 1200px) {
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.revenue-chart {
+    grid-column: 1 / -1;
+}
+
+.expenses-chart .chart-container.pie-chart {
+    display: flex;
+    justify-content: center;
+}
+
+.pie-legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-4);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-md);
+}
+
+.legend-item:hover {
+    background: var(--bg-glass);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.legend-label {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.legend-value {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .report-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .report-actions .input,
+    .report-actions .btn {
+        width: 100%;
+    }
+}

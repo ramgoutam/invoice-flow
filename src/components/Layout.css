@@ -1,0 +1,10 @@
+/* Additional layout styles */
+.main-content {
+    transition: margin-left var(--transition-base);
+}
+
+@media (max-width: 1024px) {
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
