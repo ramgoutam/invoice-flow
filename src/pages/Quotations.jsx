@@ -2,15 +2,15 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
-import { Plus, Search, FileText, MoreVertical, Trash2, Edit2, Copy, ArrowRight } from 'lucide-react';
+import { Plus, Search, MoreVertical, Edit2, Trash2, Copy, FileText, ArrowRight } from 'lucide-react';
 import { formatCurrency, formatDate, getStatusColor } from '../utils/helpers';
 import './Invoices.css';
 
 function Quotations() {
     const { state, dispatch } = useApp();
-    const { quotations, clients } = state;
+    const { quotations, clients, settings } = state;
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
 
     const statuses = [
@@ -24,17 +24,19 @@ function Quotations() {
 
     const getClientName = (clientId) => {
         const client = clients.find(c => c.id === clientId);
-        return client ? client.name : 'Unknown';
+        return client ? client.name : 'Unknown Client';
     };
 
     const filteredQuotations = useMemo(() => {
-        return quotations.filter(quotation => {
-            const matchesSearch = quotation.quotationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                getClientName(quotation.clientId).toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesStatus = statusFilter === 'all' || quotation.status === statusFilter;
-            return matchesSearch && matchesStatus;
-        });
-    }, [quotations, searchTerm, statusFilter, clients]);
+        return quotations
+            .filter(quotation => {
+                const matchesSearch = quotation.quotationNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    getClientName(quotation.clientId).toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesStatus = statusFilter === 'all' || quotation.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            })
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }, [quotations, searchQuery, statusFilter, clients]);
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this quotation?')) {
@@ -46,10 +48,10 @@ function Quotations() {
         const invoiceData = {
             clientId: quotation.clientId,
             bankAccountId: quotation.bankAccountId || '',
-            invoiceNumber: `INV-${state.settings.invoiceNextNumber}`,
+            invoiceNumber: `INV-${settings.invoiceNextNumber}`,
             status: 'draft',
             issueDate: new Date().toISOString().split('T')[0],
-            dueDate: new Date(Date.now() + state.settings.paymentTerms * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            dueDate: new Date(Date.now() + settings.paymentTerms * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             items: quotation.items,
             enableTax: quotation.enableTax,
             taxRate: quotation.taxRate,
@@ -87,8 +89,8 @@ function Quotations() {
                             type="text"
                             className="input"
                             placeholder="Search quotations..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
 
@@ -105,93 +107,92 @@ function Quotations() {
                     </div>
                 </div>
 
-                <div className="glass-card">
-                    {filteredQuotations.length === 0 ? (
-                        <div className="empty-state">
-                            <FileText size={48} />
-                            <h3 className="empty-state-title">No quotations found</h3>
-                            <p className="empty-state-description">
-                                {quotations.length === 0
-                                    ? 'Create your first quotation to get started.'
-                                    : 'Try adjusting your search or filter.'}
-                            </p>
-                            {quotations.length === 0 && (
-                                <Link to="/quotations/new" className="btn btn-primary">
-                                    <Plus size={18} />
-                                    Create Quotation
-                                </Link>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="table-container">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th>Quotation #</th>
-                                        <th>Client</th>
-                                        <th>Date</th>
-                                        <th>Valid Until</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredQuotations.map(quotation => (
-                                        <tr key={quotation.id}>
-                                            <td>
-                                                <Link to={`/quotations/${quotation.id}`} className="invoice-link">
-                                                    {quotation.quotationNumber}
-                                                </Link>
-                                            </td>
-                                            <td>{getClientName(quotation.clientId)}</td>
-                                            <td>{formatDate(quotation.issueDate)}</td>
-                                            <td>{formatDate(quotation.validUntil)}</td>
-                                            <td>{formatCurrency(quotation.total, quotation.currency)}</td>
-                                            <td>
-                                                <span className={`badge badge-${getStatusColor(quotation.status)}`}>
-                                                    {quotation.status}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div className="dropdown">
-                                                    <button className="btn-icon">
-                                                        <MoreVertical size={18} />
-                                                    </button>
-                                                    <div className="dropdown-menu">
-                                                        <Link to={`/quotations/${quotation.id}`} className="dropdown-item">
-                                                            <Edit2 size={16} />
-                                                            Edit
-                                                        </Link>
-                                                        {quotation.status !== 'accepted' && (
-                                                            <button
-                                                                className="dropdown-item"
-                                                                onClick={() => handleConvertToInvoice(quotation)}
-                                                            >
-                                                                <ArrowRight size={16} />
-                                                                Convert to Invoice
-                                                            </button>
-                                                        )}
+                {filteredQuotations.length === 0 ? (
+                    <div className="empty-state">
+                        <FileText size={48} />
+                        <h3 className="empty-state-title">No quotations found</h3>
+                        <p className="empty-state-description">
+                            {quotations.length === 0
+                                ? 'Create your first quotation to get started.'
+                                : 'Try adjusting your search or filter.'}
+                        </p>
+                        {quotations.length === 0 && (
+                            <Link to="/quotations/new" className="btn btn-primary">
+                                <Plus size={18} />
+                                Create Quotation
+                            </Link>
+                        )}
+                    </div>
+                ) : (
+                    <div className="table-container">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Quotation #</th>
+                                    <th>Client</th>
+                                    <th>Issue Date</th>
+                                    <th>Valid Until</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredQuotations.map(quotation => (
+                                    <tr key={quotation.id}>
+                                        <td>
+                                            <Link to={`/quotations/${quotation.id}`} className="invoice-link">
+                                                {quotation.quotationNumber}
+                                            </Link>
+                                        </td>
+                                        <td>{getClientName(quotation.clientId)}</td>
+                                        <td>{formatDate(quotation.issueDate)}</td>
+                                        <td>{formatDate(quotation.validUntil)}</td>
+                                        <td>{formatCurrency(quotation.total, quotation.currency)}</td>
+                                        <td>
+                                            <span className={`badge badge-${getStatusColor(quotation.status)}`}>
+                                                {quotation.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div className="dropdown">
+                                                <button className="btn-icon">
+                                                    <MoreVertical size={18} />
+                                                </button>
+                                                <div className="dropdown-menu">
+                                                    <Link to={`/quotations/${quotation.id}`} className="dropdown-item">
+                                                        <Edit2 size={16} />
+                                                        Edit
+                                                    </Link>
+                                                    {quotation.status !== 'accepted' && (
                                                         <button
-                                                            className="dropdown-item danger"
-                                                            onClick={() => handleDelete(quotation.id)}
+                                                            className="dropdown-item"
+                                                            onClick={() => handleConvertToInvoice(quotation)}
                                                         >
-                                                            <Trash2 size={16} />
-                                                            Delete
+                                                            <ArrowRight size={16} />
+                                                            Convert to Invoice
                                                         </button>
-                                                    </div>
+                                                    )}
+                                                    <button
+                                                        className="dropdown-item danger"
+                                                        onClick={() => handleDelete(quotation.id)}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                        Delete
+                                                    </button>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
 export default Quotations;
+

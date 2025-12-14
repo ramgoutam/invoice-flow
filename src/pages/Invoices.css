@@ -1,5 +1,21 @@
 .invoices-page {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.invoices-page .page-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--spacing-6);
+    width: 100%;
+    max-width: 1600px;
+}
+
+.invoices-page .table-container {
+    flex: 1;
+    overflow-y: auto;
 }
 
 .invoices-toolbar {

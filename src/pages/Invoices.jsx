@@ -1,18 +1,17 @@
 import { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
-import { Plus, Search, Filter, MoreVertical, Edit2, Trash2, Copy, Download, Eye, X } from 'lucide-react';
+import { Plus, Search, MoreVertical, Edit2, Trash2, Copy, FileText } from 'lucide-react';
 import { formatDate, formatCurrency, getStatusColor, generateInvoiceNumber } from '../utils/helpers';
 import './Invoices.css';
 
 function Invoices() {
     const { state, dispatch } = useApp();
     const { clients, invoices, settings } = state;
-    const navigate = useNavigate();
+
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
-    const [dropdownOpen, setDropdownOpen] = useState(null);
 
     const filteredInvoices = useMemo(() => {
         return invoices
@@ -104,17 +103,15 @@ function Invoices() {
                 </div>
 
                 {filteredInvoices.length === 0 ? (
-                    <div className="empty-state glass-card">
-                        <div className="empty-state-icon">
-                            <Plus size={32} />
-                        </div>
+                    <div className="empty-state">
+                        <Plus size={48} />
                         <h3 className="empty-state-title">No invoices found</h3>
                         <p className="empty-state-description">
-                            {searchQuery || statusFilter !== 'all'
-                                ? "No invoices match your filters."
-                                : "Create your first invoice to get started."}
+                            {invoices.length === 0
+                                ? 'Create your first invoice to get started.'
+                                : 'Try adjusting your search or filter.'}
                         </p>
-                        {!searchQuery && statusFilter === 'all' && (
+                        {invoices.length === 0 && (
                             <Link to="/invoices/new" className="btn btn-primary">
                                 <Plus size={18} />
                                 Create Invoice
@@ -122,11 +119,11 @@ function Invoices() {
                         )}
                     </div>
                 ) : (
-                    <div className="table-container glass-card" style={{ padding: 0 }}>
+                    <div className="table-container">
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <th>Invoice</th>
+                                    <th>Invoice #</th>
                                     <th>Client</th>
                                     <th>Issue Date</th>
                                     <th>Due Date</th>
@@ -146,7 +143,7 @@ function Invoices() {
                                         <td>{getClientName(invoice.clientId)}</td>
                                         <td>{formatDate(invoice.issueDate)}</td>
                                         <td>{formatDate(invoice.dueDate)}</td>
-                                        <td className="font-semibold">{formatCurrency(invoice.total, invoice.currency)}</td>
+                                        <td>{formatCurrency(invoice.total, invoice.currency)}</td>
                                         <td>
                                             <span className={`badge badge-${getStatusColor(invoice.status)}`}>
                                                 {invoice.status}
@@ -154,44 +151,34 @@ function Invoices() {
                                         </td>
                                         <td>
                                             <div className="dropdown">
-                                                <button
-                                                    className="btn-icon sm"
-                                                    onClick={() => setDropdownOpen(dropdownOpen === invoice.id ? null : invoice.id)}
-                                                >
-                                                    <MoreVertical size={16} />
+                                                <button className="btn-icon">
+                                                    <MoreVertical size={18} />
                                                 </button>
-                                                {dropdownOpen === invoice.id && (
-                                                    <div className="dropdown-menu" style={{ opacity: 1, visibility: 'visible', transform: 'translateY(0)' }}>
-                                                        <Link to={`/invoices/${invoice.id}`} className="dropdown-item" onClick={() => setDropdownOpen(null)}>
-                                                            <Eye size={16} />
-                                                            View
-                                                        </Link>
-                                                        <Link to={`/invoices/${invoice.id}/edit`} className="dropdown-item" onClick={() => setDropdownOpen(null)}>
-                                                            <Edit2 size={16} />
-                                                            Edit
-                                                        </Link>
-                                                        <button className="dropdown-item" onClick={() => handleDuplicate(invoice)}>
-                                                            <Copy size={16} />
-                                                            Duplicate
+                                                <div className="dropdown-menu">
+                                                    <Link to={`/invoices/${invoice.id}`} className="dropdown-item">
+                                                        <Edit2 size={16} />
+                                                        Edit
+                                                    </Link>
+                                                    <button className="dropdown-item" onClick={() => handleDuplicate(invoice)}>
+                                                        <Copy size={16} />
+                                                        Duplicate
+                                                    </button>
+                                                    {invoice.status !== 'paid' && (
+                                                        <button
+                                                            className="dropdown-item"
+                                                            onClick={() => handleStatusChange(invoice.id, 'paid')}
+                                                        >
+                                                            Mark as Paid
                                                         </button>
-                                                        <div className="dropdown-divider" />
-                                                        {invoice.status !== 'paid' && (
-                                                            <button className="dropdown-item" onClick={() => handleStatusChange(invoice.id, 'paid')}>
-                                                                Mark as Paid
-                                                            </button>
-                                                        )}
-                                                        {invoice.status === 'draft' && (
-                                                            <button className="dropdown-item" onClick={() => handleStatusChange(invoice.id, 'sent')}>
-                                                                Mark as Sent
-                                                            </button>
-                                                        )}
-                                                        <div className="dropdown-divider" />
-                                                        <button className="dropdown-item text-error" onClick={() => handleDelete(invoice.id)}>
-                                                            <Trash2 size={16} />
-                                                            Delete
-                                                        </button>
-                                                    </div>
-                                                )}
+                                                    )}
+                                                    <button
+                                                        className="dropdown-item danger"
+                                                        onClick={() => handleDelete(invoice.id)}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
