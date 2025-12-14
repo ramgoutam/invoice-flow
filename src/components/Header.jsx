@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Search, Bell, Moon, Sun, Menu } from 'lucide-react';
+import { Search, Moon, Sun, Menu } from 'lucide-react';
 import './Header.css';
 
 function Header({ title, children }) {
@@ -42,10 +42,7 @@ function Header({ title, children }) {
                     )}
                 </div>
 
-                <button className="btn-icon notification-btn">
-                    <Bell size={20} />
-                    <span className="notification-badge">3</span>
-                </button>
+
 
                 <button className="btn-icon theme-toggle" onClick={toggleTheme}>
                     {state.theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
