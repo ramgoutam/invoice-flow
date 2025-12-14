@@ -1,0 +1,29 @@
+{
+    "name": "InvoiceFlow",
+    "short_name": "InvoiceFlow",
+    "description": "Professional invoicing application for freelancers",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#3b82f6",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "/favicon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "business",
+        "finance",
+        "productivity"
+    ]
+}
