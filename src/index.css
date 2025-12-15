@@ -510,7 +510,7 @@ select.input {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--text-tertiary);
+  color: var(--accent-primary);
   background: var(--bg-glass);
 }
 
@@ -747,6 +747,11 @@ select.input {
 }
 
 .text-right {
+  text-align: right;
+}
+
+.table th.text-right,
+.table td.text-right {
   text-align: right;
 }
 

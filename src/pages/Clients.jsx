@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import { Plus, Search, Mail, Phone, MapPin, MoreVertical, Edit2, Trash2, X } from 'lucide-react';
 import { formatDate, getInitials, formatCurrency } from '../utils/helpers';
 import { v4 as uuidv4 } from 'uuid';
+import ConfirmDialog from '../components/ConfirmDialog';
 import './Clients.css';
 
 function Clients() {
@@ -13,6 +14,7 @@ function Clients() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingClient, setEditingClient] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(null);
+    const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, clientId: null });
 
     const [formData, setFormData] = useState({
         name: '',
@@ -94,10 +96,14 @@ function Clients() {
     };
 
     const handleDelete = (clientId) => {
-        if (window.confirm('Are you sure you want to delete this client?')) {
-            dispatch({ type: 'DELETE_CLIENT', payload: clientId });
-        }
+        setDeleteConfirm({ isOpen: true, clientId });
         setDropdownOpen(null);
+    };
+
+    const confirmDelete = () => {
+        if (deleteConfirm.clientId) {
+            dispatch({ type: 'DELETE_CLIENT', payload: deleteConfirm.clientId });
+        }
     };
 
     return (
@@ -300,6 +306,17 @@ function Clients() {
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, clientId: null })}
+                onConfirm={confirmDelete}
+                title="Delete Client"
+                message="Are you sure you want to delete this client? All associated data will be lost."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </div>
     );
 }

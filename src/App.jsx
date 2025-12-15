@@ -6,8 +6,10 @@ import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import Invoices from './pages/Invoices';
 import InvoiceEditor from './pages/InvoiceEditor';
+import InvoicePreview from './pages/InvoicePreview';
 import Quotations from './pages/Quotations';
 import QuotationEditor from './pages/QuotationEditor';
+import QuotationPreview from './pages/QuotationPreview';
 import Expenses from './pages/Expenses';
 import TimeTracking from './pages/TimeTracking';
 import Reports from './pages/Reports';
@@ -42,11 +44,12 @@ function AppRoutes() {
         <Route path="clients" element={<Clients />} />
         <Route path="invoices" element={<Invoices />} />
         <Route path="invoices/new" element={<InvoiceEditor />} />
-        <Route path="invoices/:id" element={<InvoiceEditor />} />
+        <Route path="invoices/:id" element={<InvoicePreview />} />
         <Route path="invoices/:id/edit" element={<InvoiceEditor />} />
         <Route path="quotations" element={<Quotations />} />
         <Route path="quotations/new" element={<QuotationEditor />} />
-        <Route path="quotations/:id" element={<QuotationEditor />} />
+        <Route path="quotations/:id" element={<QuotationPreview />} />
+        <Route path="quotations/:id/edit" element={<QuotationEditor />} />
         <Route path="expenses" element={<Expenses />} />
         <Route path="time-tracking" element={<TimeTracking />} />
         <Route path="reports" element={<Reports />} />

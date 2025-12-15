@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
-import { Plus, Search, MoreVertical, Edit2, Trash2, Copy, FileText } from 'lucide-react';
+import { Plus, Search, Trash2, Eye, Download, CheckCircle } from 'lucide-react';
 import { formatDate, formatCurrency, getStatusColor, generateInvoiceNumber } from '../utils/helpers';
+import { downloadInvoicePDF } from '../components/PDFDownloader';
+import ConfirmDialog from '../components/ConfirmDialog';
 import './Invoices.css';
 
 function Invoices() {
@@ -12,6 +14,7 @@ function Invoices() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, invoiceId: null });
 
     const filteredInvoices = useMemo(() => {
         return invoices
@@ -43,14 +46,16 @@ function Invoices() {
         delete newInvoice.id;
         delete newInvoice.createdAt;
         dispatch({ type: 'ADD_INVOICE', payload: newInvoice });
-        setDropdownOpen(null);
     };
 
     const handleDelete = (invoiceId) => {
-        if (window.confirm('Are you sure you want to delete this invoice?')) {
-            dispatch({ type: 'DELETE_INVOICE', payload: invoiceId });
+        setDeleteConfirm({ isOpen: true, invoiceId });
+    };
+
+    const confirmDelete = () => {
+        if (deleteConfirm.invoiceId) {
+            dispatch({ type: 'DELETE_INVOICE', payload: deleteConfirm.invoiceId });
         }
-        setDropdownOpen(null);
     };
 
     const handleStatusChange = (invoiceId, newStatus) => {
@@ -59,7 +64,12 @@ function Invoices() {
             updates.paidDate = new Date().toISOString().split('T')[0];
         }
         dispatch({ type: 'UPDATE_INVOICE', payload: updates });
-        setDropdownOpen(null);
+    };
+
+    const handleDownload = async (invoice) => {
+        const client = clients.find(c => c.id === invoice.clientId);
+        const bankAccount = state.bankAccounts?.find(b => b.id === invoice.bankAccountId);
+        await downloadInvoicePDF(invoice, client, bankAccount, settings);
     };
 
     const statusOptions = ['all', 'draft', 'pending', 'sent', 'paid', 'overdue', 'cancelled'];
@@ -129,7 +139,7 @@ function Invoices() {
                                     <th>Due Date</th>
                                     <th>Amount</th>
                                     <th>Status</th>
-                                    <th></th>
+                                    <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -150,35 +160,37 @@ function Invoices() {
                                             </span>
                                         </td>
                                         <td>
-                                            <div className="dropdown">
-                                                <button className="btn-icon">
-                                                    <MoreVertical size={18} />
+                                            <div className="action-buttons">
+                                                <Link
+                                                    to={`/invoices/${invoice.id}`}
+                                                    className="btn-icon"
+                                                    title="View invoice"
+                                                >
+                                                    <Eye size={18} />
+                                                </Link>
+                                                <button
+                                                    className="btn-icon"
+                                                    onClick={() => handleDownload(invoice)}
+                                                    title="Download PDF"
+                                                >
+                                                    <Download size={18} />
                                                 </button>
-                                                <div className="dropdown-menu">
-                                                    <Link to={`/invoices/${invoice.id}`} className="dropdown-item">
-                                                        <Edit2 size={16} />
-                                                        Edit
-                                                    </Link>
-                                                    <button className="dropdown-item" onClick={() => handleDuplicate(invoice)}>
-                                                        <Copy size={16} />
-                                                        Duplicate
-                                                    </button>
-                                                    {invoice.status !== 'paid' && (
-                                                        <button
-                                                            className="dropdown-item"
-                                                            onClick={() => handleStatusChange(invoice.id, 'paid')}
-                                                        >
-                                                            Mark as Paid
-                                                        </button>
-                                                    )}
+                                                {invoice.status !== 'paid' && (
                                                     <button
-                                                        className="dropdown-item danger"
-                                                        onClick={() => handleDelete(invoice.id)}
+                                                        className="btn-icon success"
+                                                        onClick={() => handleStatusChange(invoice.id, 'paid')}
+                                                        title="Mark as paid"
                                                     >
-                                                        <Trash2 size={16} />
-                                                        Delete
+                                                        <CheckCircle size={18} />
                                                     </button>
-                                                </div>
+                                                )}
+                                                <button
+                                                    className="btn-icon danger"
+                                                    onClick={() => handleDelete(invoice.id)}
+                                                    title="Delete invoice"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -188,6 +200,17 @@ function Invoices() {
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, invoiceId: null })}
+                onConfirm={confirmDelete}
+                title="Delete Invoice"
+                message="Are you sure you want to delete this invoice? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </div>
     );
 }

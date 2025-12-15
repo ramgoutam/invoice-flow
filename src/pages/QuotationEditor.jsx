@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
 import { ArrowLeft, Save, Send, Plus, Trash2, Download, Printer, Settings } from 'lucide-react';
@@ -12,9 +12,11 @@ import '../components/InvoiceTemplates.css';
 function QuotationEditor() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { state, dispatch } = useApp();
     const { clients, quotations, settings, bankAccounts } = state;
     const printRef = useRef();
+    const [autoDownloadTriggered, setAutoDownloadTriggered] = useState(false);
 
     const isEditing = id && id !== 'new';
     const existingQuotation = isEditing ? quotations.find(q => q.id === id) : null;
@@ -57,6 +59,19 @@ function QuotationEditor() {
         }
     }, [existingQuotation]);
 
+    // Auto-download PDF when navigating with download=true parameter
+    useEffect(() => {
+        const shouldDownload = searchParams.get('download') === 'true';
+        if (shouldDownload && existingQuotation && !autoDownloadTriggered && printRef.current) {
+            setAutoDownloadTriggered(true);
+            // Delay to ensure the preview is fully rendered
+            const timer = setTimeout(async () => {
+                await handleExportPDF();
+                navigate('/quotations');
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [searchParams, existingQuotation, autoDownloadTriggered]);
     const selectedClient = useMemo(() => {
         return clients.find(c => c.id === formData.clientId);
     }, [clients, formData.clientId]);

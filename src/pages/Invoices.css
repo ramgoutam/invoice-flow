@@ -63,6 +63,33 @@
     color: var(--accent-primary-light);
 }
 
+.btn-icon.danger {
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.btn-icon.danger:hover {
+    color: var(--error);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.btn-icon.success {
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.btn-icon.success:hover {
+    color: var(--success);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-1);
+    align-items: center;
+    justify-content: flex-end;
+}
+
 .table td .dropdown {
     display: inline-block;
 }

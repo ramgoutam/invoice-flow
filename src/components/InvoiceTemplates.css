@@ -385,3 +385,130 @@
     font-size: 10px;
     color: var(--text-secondary);
 }
+
+/* Invoice layout */
+.invoice-template.classic {
+    display: block;
+}
+
+.invoice-main-content {
+    display: block;
+}
+
+.invoice-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Print mode - push footer to bottom */
+.invoice-preview.print-mode .invoice-template.classic {
+    display: flex;
+    flex-direction: column;
+    min-height: 277mm;
+    /* A4 height (297mm) minus 10mm margins and 10mm padding */
+}
+
+.invoice-preview.print-mode .invoice-main-content {
+    flex: 0 0 auto;
+}
+
+.invoice-preview.print-mode .invoice-footer {
+    margin-top: auto;
+}
+
+.invoice-footer .preview-notes,
+.invoice-footer .preview-payment-details {
+    margin-top: 12px;
+}
+
+.invoice-footer .preview-notes:first-child,
+.invoice-footer .preview-payment-details:first-child {
+    margin-top: 0;
+}
+
+/* Compact footer for fitting on single page */
+.invoice-footer .preview-notes h4,
+.invoice-footer .preview-payment-details h4 {
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.invoice-footer .preview-notes p {
+    font-size: 11px;
+    margin: 0;
+}
+
+.invoice-footer .bank-detail {
+    font-size: 11px;
+    padding: 4px 0;
+}
+
+/* Compact print mode styles */
+.invoice-preview.print-mode .invoice-template.classic {
+    font-size: 11px;
+}
+
+.invoice-preview.print-mode .preview-header {
+    margin-bottom: 16px;
+}
+
+.invoice-preview.print-mode .preview-business h2 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.invoice-preview.print-mode .preview-business p {
+    margin: 2px 0;
+    font-size: 10px;
+}
+
+.invoice-preview.print-mode .preview-logo {
+    max-width: 100px;
+    max-height: 40px;
+    margin-bottom: 8px;
+}
+
+.invoice-preview.print-mode .preview-invoice-title {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+.invoice-preview.print-mode .preview-client {
+    margin-bottom: 12px;
+    padding: 10px;
+}
+
+.invoice-preview.print-mode .preview-client h4 {
+    font-size: 10px;
+    margin-bottom: 4px;
+}
+
+.invoice-preview.print-mode .preview-client p {
+    margin: 2px 0;
+    font-size: 11px;
+}
+
+.invoice-preview.print-mode .preview-table {
+    margin-bottom: 12px;
+}
+
+.invoice-preview.print-mode .preview-table th,
+.invoice-preview.print-mode .preview-table td {
+    padding: 6px 8px;
+    font-size: 10px;
+}
+
+.invoice-preview.print-mode .preview-totals {
+    margin-bottom: 12px;
+}
+
+.invoice-preview.print-mode .preview-totals-row {
+    padding: 4px 0;
+    font-size: 11px;
+}
+
+.invoice-preview.print-mode .invoice-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+}

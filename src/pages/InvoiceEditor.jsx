@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
 import { ArrowLeft, Save, Send, Plus, Trash2, Download, Printer, Settings } from 'lucide-react';
@@ -12,9 +12,11 @@ import '../components/InvoiceTemplates.css';
 function InvoiceEditor() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { state, dispatch } = useApp();
     const { clients, invoices, settings, bankAccounts } = state;
     const printRef = useRef();
+    const [autoDownloadTriggered, setAutoDownloadTriggered] = useState(false);
 
     const isEditing = id && id !== 'new';
     const existingInvoice = isEditing ? invoices.find(inv => inv.id === id) : null;
@@ -58,6 +60,20 @@ function InvoiceEditor() {
             });
         }
     }, [existingInvoice]);
+
+    // Auto-download PDF when navigating with download=true parameter
+    useEffect(() => {
+        const shouldDownload = searchParams.get('download') === 'true';
+        if (shouldDownload && existingInvoice && !autoDownloadTriggered && printRef.current) {
+            setAutoDownloadTriggered(true);
+            // Delay to ensure the preview is fully rendered
+            const timer = setTimeout(async () => {
+                await handleExportPDF();
+                navigate('/invoices');
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [searchParams, existingInvoice, autoDownloadTriggered]);
 
     const selectedClient = useMemo(() => {
         return clients.find(c => c.id === formData.clientId);

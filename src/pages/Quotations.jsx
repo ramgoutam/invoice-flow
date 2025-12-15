@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
-import { Plus, Search, MoreVertical, Edit2, Trash2, Copy, FileText, ArrowRight } from 'lucide-react';
+import { Plus, Search, Trash2, Eye, Download, ArrowRight, FileText } from 'lucide-react';
 import { formatCurrency, formatDate, getStatusColor } from '../utils/helpers';
+import { downloadQuotationPDF } from '../components/PDFDownloader';
+import ConfirmDialog from '../components/ConfirmDialog';
 import './Invoices.css';
 
 function Quotations() {
@@ -12,6 +14,7 @@ function Quotations() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, quotationId: null });
 
     const statuses = [
         { value: 'all', label: 'All' },
@@ -39,8 +42,12 @@ function Quotations() {
     }, [quotations, searchQuery, statusFilter, clients]);
 
     const handleDelete = (id) => {
-        if (window.confirm('Are you sure you want to delete this quotation?')) {
-            dispatch({ type: 'DELETE_QUOTATION', payload: id });
+        setDeleteConfirm({ isOpen: true, quotationId: id });
+    };
+
+    const confirmDelete = () => {
+        if (deleteConfirm.quotationId) {
+            dispatch({ type: 'DELETE_QUOTATION', payload: deleteConfirm.quotationId });
         }
     };
 
@@ -67,6 +74,12 @@ function Quotations() {
         dispatch({ type: 'ADD_INVOICE', payload: invoiceData });
         dispatch({ type: 'UPDATE_QUOTATION', payload: { id: quotation.id, status: 'accepted' } });
         alert('Quotation converted to invoice successfully!');
+    };
+
+    const handleDownload = async (quotation) => {
+        const client = clients.find(c => c.id === quotation.clientId);
+        const bankAccount = state.bankAccounts?.find(b => b.id === quotation.bankAccountId);
+        await downloadQuotationPDF(quotation, client, bankAccount, settings);
     };
 
     return (
@@ -134,7 +147,7 @@ function Quotations() {
                                     <th>Valid Until</th>
                                     <th>Amount</th>
                                     <th>Status</th>
-                                    <th></th>
+                                    <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -155,32 +168,37 @@ function Quotations() {
                                             </span>
                                         </td>
                                         <td>
-                                            <div className="dropdown">
-                                                <button className="btn-icon">
-                                                    <MoreVertical size={18} />
+                                            <div className="action-buttons">
+                                                <Link
+                                                    to={`/quotations/${quotation.id}`}
+                                                    className="btn-icon"
+                                                    title="View quotation"
+                                                >
+                                                    <Eye size={18} />
+                                                </Link>
+                                                <button
+                                                    className="btn-icon"
+                                                    onClick={() => handleDownload(quotation)}
+                                                    title="Download PDF"
+                                                >
+                                                    <Download size={18} />
                                                 </button>
-                                                <div className="dropdown-menu">
-                                                    <Link to={`/quotations/${quotation.id}`} className="dropdown-item">
-                                                        <Edit2 size={16} />
-                                                        Edit
-                                                    </Link>
-                                                    {quotation.status !== 'accepted' && (
-                                                        <button
-                                                            className="dropdown-item"
-                                                            onClick={() => handleConvertToInvoice(quotation)}
-                                                        >
-                                                            <ArrowRight size={16} />
-                                                            Convert to Invoice
-                                                        </button>
-                                                    )}
+                                                {quotation.status !== 'accepted' && (
                                                     <button
-                                                        className="dropdown-item danger"
-                                                        onClick={() => handleDelete(quotation.id)}
+                                                        className="btn-icon success"
+                                                        onClick={() => handleConvertToInvoice(quotation)}
+                                                        title="Convert to invoice"
                                                     >
-                                                        <Trash2 size={16} />
-                                                        Delete
+                                                        <ArrowRight size={18} />
                                                     </button>
-                                                </div>
+                                                )}
+                                                <button
+                                                    className="btn-icon danger"
+                                                    onClick={() => handleDelete(quotation.id)}
+                                                    title="Delete quotation"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -190,6 +208,17 @@ function Quotations() {
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                isOpen={deleteConfirm.isOpen}
+                onClose={() => setDeleteConfirm({ isOpen: false, quotationId: null })}
+                onConfirm={confirmDelete}
+                title="Delete Quotation"
+                message="Are you sure you want to delete this quotation? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </div>
     );
 }
