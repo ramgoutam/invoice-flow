@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
-import { Zap, Mail, Lock, Loader2 } from 'lucide-react';
+import { Zap, Mail, Lock, Loader2, AlertCircle } from 'lucide-react';
+import './Auth.css';
 
 export default function Auth() {
     const [loading, setLoading] = useState(false);
@@ -31,7 +31,6 @@ export default function Auth() {
                     password,
                 });
                 if (error) throw error;
-                // Navigation handled by onAuthStateChange in App/Context or direct navigate
                 navigate('/');
             }
         } catch (error) {
@@ -42,109 +41,92 @@ export default function Auth() {
     };
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'var(--bg-primary)',
-            padding: '20px'
-        }}>
-            <div className="glass-card" style={{ maxWidth: '400px', width: '100%', padding: '40px' }}>
-                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                    <div style={{
-                        background: 'var(--accent-primary)',
-                        width: '50px',
-                        height: '50px',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 20px',
-                        color: 'white'
-                    }}>
-                        <Zap size={24} fill="currentColor" />
-                    </div>
-                    <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>
-                        {isSignUp ? 'Create Account' : 'Welcome Back'}
-                    </h1>
-                    <p className="text-muted">
-                        {isSignUp ? 'Sign up to get started' : 'Sign in to your account'}
-                    </p>
-                </div>
-
-                <form onSubmit={handleAuth}>
-                    <div className="input-group">
-                        <label className="input-label">Email</label>
-                        <div className="input-icon-wrapper">
-                            <Mail size={18} className="icon" />
-                            <input
-                                type="email"
-                                className="input"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="name@company.com"
-                                required
-                            />
+        <div className="auth-page">
+            <div className="auth-container">
+                <div className="auth-card">
+                    <div className="auth-header">
+                        <div className="auth-logo">
+                            <Zap size={32} fill="currentColor" />
                         </div>
+                        <h1 className="auth-title">
+                            {isSignUp ? 'Create Account' : 'Welcome Back'}
+                        </h1>
+                        <p className="auth-subtitle">
+                            {isSignUp
+                                ? 'Start managing your invoices today'
+                                : 'Sign in to continue to InvoiceFlow'}
+                        </p>
                     </div>
 
-                    <div className="input-group">
-                        <label className="input-label">Password</label>
-                        <div className="input-icon-wrapper">
-                            <Lock size={18} className="icon" />
-                            <input
-                                type="password"
-                                className="input"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                            />
+                    <form onSubmit={handleAuth} className="auth-form">
+                        <div className="auth-input-group">
+                            <label className="auth-label">Email Address</label>
+                            <div className="auth-input-wrapper">
+                                <input
+                                    type="email"
+                                    className="auth-input"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="name@company.com"
+                                    required
+                                />
+                                <Mail size={18} className="auth-input-icon" />
+                            </div>
                         </div>
+
+                        <div className="auth-input-group">
+                            <label className="auth-label">Password</label>
+                            <div className="auth-input-wrapper">
+                                <input
+                                    type="password"
+                                    className="auth-input"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Enter your password"
+                                    required
+                                    minLength={6}
+                                />
+                                <Lock size={18} className="auth-input-icon" />
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div className="auth-error">
+                                <AlertCircle size={18} />
+                                {error}
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="auth-submit-btn"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 size={18} className="animate-spin" />
+                                    {isSignUp ? 'Creating Account...' : 'Signing In...'}
+                                </>
+                            ) : (
+                                isSignUp ? 'Create Account' : 'Sign In'
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="auth-footer">
+                        <span className="auth-footer-text">
+                            {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                        </span>
+                        <button
+                            onClick={() => {
+                                setIsSignUp(!isSignUp);
+                                setError(null);
+                            }}
+                            className="auth-switch-btn"
+                        >
+                            {isSignUp ? 'Sign In' : 'Sign Up'}
+                        </button>
                     </div>
-
-                    {error && (
-                        <div style={{
-                            padding: '10px',
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            border: '1px solid rgba(239, 68, 68, 0.2)',
-                            color: '#ef4444',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            marginBottom: '20px'
-                        }}>
-                            {error}
-                        </div>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ width: '100%', justifyContent: 'center' }}
-                        disabled={loading}
-                    >
-                        {loading ? <Loader2 size={18} className="animate-spin" /> : (isSignUp ? 'Sign Up' : 'Sign In')}
-                    </button>
-                </form>
-
-                <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px' }}>
-                    <span className="text-muted">
-                        {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-                    </span>
-                    <button
-                        onClick={() => setIsSignUp(!isSignUp)}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: 'var(--accent-primary)',
-                            cursor: 'pointer',
-                            fontWeight: '500',
-                            padding: 0
-                        }}
-                    >
-                        {isSignUp ? 'Sign In' : 'Sign Up'}
-                    </button>
                 </div>
             </div>
         </div>
