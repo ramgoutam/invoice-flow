@@ -11,10 +11,19 @@
 
 .stat-card-wrapper {
     padding: var(--spacing-5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .stat-card-wrapper:hover {
     transform: translateY(-4px);
+}
+
+a.stat-card-wrapper {
+    cursor: pointer;
+}
+
+a.stat-card-wrapper:hover {
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
 }
 
 @media (max-width: 1200px) {

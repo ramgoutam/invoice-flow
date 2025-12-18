@@ -474,6 +474,30 @@
     margin-bottom: 4px;
 }
 
+.invoice-preview.print-mode .preview-addresses {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.invoice-preview.print-mode .preview-from,
+.invoice-preview.print-mode .preview-to {
+    padding: 10px;
+}
+
+.invoice-preview.print-mode .preview-from h4,
+.invoice-preview.print-mode .preview-to h4 {
+    font-size: 10px;
+    margin-bottom: 4px;
+}
+
+.invoice-preview.print-mode .preview-from p,
+.invoice-preview.print-mode .preview-to p {
+    margin: 2px 0;
+    font-size: 11px;
+}
+
 .invoice-preview.print-mode .preview-client {
     margin-bottom: 12px;
     padding: 10px;

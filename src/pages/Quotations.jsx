@@ -84,17 +84,15 @@ function Quotations() {
 
     return (
         <div className="invoices-page">
-            <Header title="Quotations" />
+            <Header title="">
+                <h2 className="header-page-title">Quotations</h2>
+                <Link to="/quotations/new" className="btn btn-primary">
+                    <Plus size={18} />
+                    New Quotation
+                </Link>
+            </Header>
 
             <div className="page-container">
-                <div className="page-header">
-                    <h2 className="page-title">Quotations</h2>
-                    <Link to="/quotations/new" className="btn btn-primary">
-                        <Plus size={18} />
-                        New Quotation
-                    </Link>
-                </div>
-
                 <div className="invoices-toolbar">
                     <div className="input-icon-wrapper" style={{ maxWidth: '400px', flex: 1 }}>
                         <Search size={18} className="icon" />
@@ -111,7 +109,7 @@ function Quotations() {
                         {statuses.map(status => (
                             <button
                                 key={status.value}
-                                className={`filter-btn ${statusFilter === status.value ? 'active' : ''}`}
+                                className={`filter-btn filter-${status.value} ${statusFilter === status.value ? 'active' : ''}`}
                                 onClick={() => setStatusFilter(status.value)}
                             >
                                 {status.label}

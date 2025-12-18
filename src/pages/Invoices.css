@@ -104,3 +104,80 @@
         padding: var(--spacing-3);
     }
 }
+
+/* Status-specific filter button colors */
+.filter-btn.filter-all {
+    border-color: #64748b;
+    color: #64748b;
+}
+
+.filter-btn.filter-all.active {
+    background: #64748b;
+    color: white;
+}
+
+.filter-btn.filter-draft {
+    border-color: #94a3b8;
+    color: #64748b;
+}
+
+.filter-btn.filter-draft.active {
+    background: #94a3b8;
+    color: white;
+}
+
+.filter-btn.filter-pending {
+    border-color: #f59e0b;
+    color: #d97706;
+}
+
+.filter-btn.filter-pending.active {
+    background: #f59e0b;
+    color: white;
+}
+
+.filter-btn.filter-sent {
+    border-color: #3b82f6;
+    color: #2563eb;
+}
+
+.filter-btn.filter-sent.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.filter-btn.filter-paid,
+.filter-btn.filter-accepted {
+    border-color: #22c55e;
+    color: #16a34a;
+}
+
+.filter-btn.filter-paid.active,
+.filter-btn.filter-accepted.active {
+    background: #22c55e;
+    color: white;
+}
+
+.filter-btn.filter-overdue,
+.filter-btn.filter-rejected,
+.filter-btn.filter-expired {
+    border-color: #ef4444;
+    color: #dc2626;
+}
+
+.filter-btn.filter-overdue.active,
+.filter-btn.filter-rejected.active,
+.filter-btn.filter-expired.active {
+    background: #ef4444;
+    color: white;
+}
+
+.filter-btn.filter-cancelled {
+    border-color: #6b7280;
+    color: #4b5563;
+}
+
+.filter-btn.filter-cancelled.active {
+    background: #6b7280;
+    color: white;
+}

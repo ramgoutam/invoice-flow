@@ -11,14 +11,10 @@ export function ClassicTemplate({ formData, settings, selectedClient, selectedBa
         <div className="invoice-template classic">
             <div className="invoice-main-content">
                 <div className="preview-header">
-                    <div className="preview-business">
+                    <div className="preview-logo-section">
                         {settings.businessLogo && (
                             <img src={settings.businessLogo} alt="Logo" className="preview-logo" />
                         )}
-                        <h2>{settings.businessName}</h2>
-                        <p>{settings.businessEmail}</p>
-                        <p>{settings.businessPhone}</p>
-                        <p>{settings.businessAddress}</p>
                     </div>
                     <div className="preview-invoice-info">
                         <h1 className="preview-invoice-title">{isQuotation ? 'QUOTATION' : 'INVOICE'}</h1>
@@ -28,17 +24,26 @@ export function ClassicTemplate({ formData, settings, selectedClient, selectedBa
                     </div>
                 </div>
 
-                <div className="preview-client">
-                    <h4>Bill To:</h4>
-                    {selectedClient ? (
-                        <>
-                            <p><strong>{selectedClient.name}</strong></p>
-                            <p>{selectedClient.email}</p>
-                            <p>{selectedClient.address}</p>
-                        </>
-                    ) : (
-                        <p className="text-muted">Select a client</p>
-                    )}
+                <div className="preview-addresses">
+                    <div className="preview-from">
+                        <h4>From:</h4>
+                        <p><strong>{settings.businessName}</strong></p>
+                        <p>{settings.businessEmail}</p>
+                        <p>{settings.businessPhone}</p>
+                        <p>{settings.businessAddress}</p>
+                    </div>
+                    <div className="preview-to">
+                        <h4>Bill To:</h4>
+                        {selectedClient ? (
+                            <>
+                                <p><strong>{selectedClient.name}</strong></p>
+                                <p>{selectedClient.email}</p>
+                                <p>{selectedClient.address}</p>
+                            </>
+                        ) : (
+                            <p className="text-muted">Select a client</p>
+                        )}
+                    </div>
                 </div>
 
                 <table className="preview-table">

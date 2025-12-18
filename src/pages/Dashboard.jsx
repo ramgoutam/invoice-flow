@@ -12,6 +12,7 @@ import {
     Plus,
     ArrowRight,
     FileText,
+    UserPlus,
 } from 'lucide-react';
 import {
     LineChart,
@@ -129,7 +130,7 @@ function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="glass-card stat-card-wrapper">
+                    <Link to="/clients" className="glass-card stat-card-wrapper" style={{ textDecoration: 'none' }}>
                         <div className="stat-card">
                             <div className="stat-icon" style={{ background: '#3b82f6' }}>
                                 <Users size={24} />
@@ -143,7 +144,7 @@ function Dashboard() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Main Content Grid */}
@@ -203,7 +204,7 @@ function Dashboard() {
                             </Link>
                             <Link to="/clients" className="quick-action-btn">
                                 <div className="quick-action-icon">
-                                    <Users size={20} />
+                                    <UserPlus size={20} />
                                 </div>
                                 <span>Add Client</span>
                             </Link>

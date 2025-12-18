@@ -76,17 +76,15 @@ function Invoices() {
 
     return (
         <div className="invoices-page">
-            <Header title="Invoices" />
+            <Header title="">
+                <h2 className="header-page-title">Invoices</h2>
+                <Link to="/invoices/new" className="btn btn-primary">
+                    <Plus size={18} />
+                    New Invoice
+                </Link>
+            </Header>
 
             <div className="page-container">
-                <div className="page-header">
-                    <h2 className="page-title">Invoices</h2>
-                    <Link to="/invoices/new" className="btn btn-primary">
-                        <Plus size={18} />
-                        New Invoice
-                    </Link>
-                </div>
-
                 <div className="invoices-toolbar">
                     <div className="input-icon-wrapper" style={{ maxWidth: '400px', flex: 1 }}>
                         <Search size={18} className="icon" />
@@ -103,7 +101,7 @@ function Invoices() {
                         {statusOptions.map(status => (
                             <button
                                 key={status}
-                                className={`filter-btn ${statusFilter === status ? 'active' : ''}`}
+                                className={`filter-btn filter-${status} ${statusFilter === status ? 'active' : ''}`}
                                 onClick={() => setStatusFilter(status)}
                             >
                                 {status.charAt(0).toUpperCase() + status.slice(1)}

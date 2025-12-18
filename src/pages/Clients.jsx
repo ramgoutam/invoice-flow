@@ -20,6 +20,7 @@ function Clients() {
         name: '',
         email: '',
         phone: '',
+        secondaryPhone: '',
         address: '',
         notes: '',
     });
@@ -51,6 +52,7 @@ function Clients() {
                 name: client.name,
                 email: client.email,
                 phone: client.phone || '',
+                secondaryPhone: client.secondaryPhone || '',
                 address: client.address || '',
                 notes: client.notes || '',
             });
@@ -60,6 +62,7 @@ function Clients() {
                 name: '',
                 email: '',
                 phone: '',
+                secondaryPhone: '',
                 address: '',
                 notes: '',
             });
@@ -264,30 +267,42 @@ function Clients() {
                                         />
                                     </div>
                                     <div className="input-group">
-                                        <label className="input-label">Phone</label>
+                                        <label className="input-label">Phone *</label>
                                         <input
                                             type="tel"
                                             className="input"
                                             placeholder="+1 (555) 000-0000"
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Secondary Phone</label>
+                                        <input
+                                            type="tel"
+                                            className="input"
+                                            placeholder="+1 (555) 000-0000"
+                                            value={formData.secondaryPhone}
+                                            onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
                                         />
                                     </div>
                                     <div className="input-group full-width">
-                                        <label className="input-label">Address</label>
+                                        <label className="input-label">Address *</label>
                                         <input
                                             type="text"
                                             className="input"
                                             placeholder="123 Main St, City, State"
                                             value={formData.address}
                                             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                            required
                                         />
                                     </div>
                                     <div className="input-group full-width">
                                         <label className="input-label">Notes</label>
                                         <textarea
                                             className="input"
-                                            placeholder="Additional notes..."
+                                            placeholder="Additional notes (optional)"
                                             value={formData.notes}
                                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                         />

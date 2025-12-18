@@ -21,11 +21,12 @@ function Header({ title, children }) {
                 <button className="mobile-menu-btn" onClick={toggleMobileSidebar}>
                     <Menu size={24} />
                 </button>
-                <h1 className="header-title">{title}</h1>
+                {title && <h1 className="header-title">{title}</h1>}
+                {children && Array.isArray(children) ? children[0] : (children && !Array.isArray(children) ? children : null)}
             </div>
 
             <div className="header-right">
-                {children}
+                {children && Array.isArray(children) && children.slice(1)}
 
                 <div className={`search-container ${searchOpen ? 'open' : ''}`}>
                     <button className="btn-icon" onClick={() => setSearchOpen(!searchOpen)}>
@@ -42,17 +43,9 @@ function Header({ title, children }) {
                     )}
                 </div>
 
-
-
                 <button className="btn-icon theme-toggle" onClick={toggleTheme}>
                     {state.theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
-
-                <div className="user-menu">
-                    <div className="avatar">
-                        {state.settings.businessName?.charAt(0) || 'U'}
-                    </div>
-                </div>
             </div>
         </header>
     );

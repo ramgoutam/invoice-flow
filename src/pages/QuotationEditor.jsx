@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
+import CustomDatePicker from '../components/CustomDatePicker';
 import { ArrowLeft, Save, Send, Plus, Trash2, Download, Printer, Settings } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { formatCurrency, formatDate, generateInvoiceNumber, calculateInvoiceTotals } from '../utils/helpers';
@@ -29,7 +30,7 @@ function QuotationEditor() {
         issueDate: new Date().toISOString().split('T')[0],
         validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         items: [{ id: uuidv4(), description: '', quantity: 1, rate: 0 }],
-        enableTax: true,
+        enableTax: false,
         taxRate: settings.defaultTaxRate,
         enableDiscount: false,
         discount: 0,
@@ -147,30 +148,28 @@ function QuotationEditor() {
 
     return (
         <div className="invoice-editor-page">
-            <Header title={isEditing ? 'Edit Quotation' : 'New Quotation'} />
+            <Header title="">
+                <Link to="/quotations" className="btn btn-ghost">
+                    <ArrowLeft size={18} />
+                    Back to Quotations
+                </Link>
+                <div className="header-actions">
+                    <button className="btn btn-secondary" onClick={handleExportPDF}>
+                        <Download size={18} />
+                        Export PDF
+                    </button>
+                    <button className="btn btn-secondary" onClick={() => handleSave('draft')}>
+                        <Save size={18} />
+                        Save Draft
+                    </button>
+                    <button className="btn btn-primary" onClick={() => handleSave('sent')}>
+                        <Send size={18} />
+                        Send Quotation
+                    </button>
+                </div>
+            </Header>
 
             <div className="page-container">
-                <div className="editor-header">
-                    <Link to="/quotations" className="btn btn-ghost">
-                        <ArrowLeft size={18} />
-                        Back to Quotations
-                    </Link>
-                    <div className="editor-actions">
-                        <button className="btn btn-secondary" onClick={handleExportPDF}>
-                            <Download size={18} />
-                            Export PDF
-                        </button>
-                        <button className="btn btn-secondary" onClick={() => handleSave('draft')}>
-                            <Save size={18} />
-                            Save Draft
-                        </button>
-                        <button className="btn btn-primary" onClick={() => handleSave('sent')}>
-                            <Send size={18} />
-                            Send Quotation
-                        </button>
-                    </div>
-                </div>
-
                 <div className="editor-layout">
                     {/* Form Section */}
                     <div className="editor-form glass-card">
@@ -178,12 +177,13 @@ function QuotationEditor() {
                             <h3 className="section-title">Quotation Details</h3>
                             <div className="form-grid">
                                 <div className="input-group">
-                                    <label className="input-label">Quotation Number</label>
+                                    <label className="input-label">Quotation Number *</label>
                                     <input
                                         type="text"
                                         className="input"
                                         value={formData.quotationNumber}
                                         onChange={(e) => setFormData({ ...formData, quotationNumber: e.target.value })}
+                                        required
                                     />
                                 </div>
                                 <div className="input-group">
@@ -201,29 +201,29 @@ function QuotationEditor() {
                                     </select>
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">Issue Date</label>
-                                    <input
-                                        type="date"
-                                        className="input"
-                                        value={formData.issueDate}
-                                        onChange={(e) => setFormData({ ...formData, issueDate: e.target.value })}
+                                    <CustomDatePicker
+                                        label="Issue Date"
+                                        selected={formData.issueDate}
+                                        onChange={(date) => setFormData({ ...formData, issueDate: date })}
+                                        required
                                     />
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">Valid Until</label>
-                                    <input
-                                        type="date"
-                                        className="input"
-                                        value={formData.validUntil}
-                                        onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })}
+                                    <CustomDatePicker
+                                        label="Valid Until"
+                                        selected={formData.validUntil}
+                                        onChange={(date) => setFormData({ ...formData, validUntil: date })}
+                                        required
+                                        minDate={new Date(formData.issueDate)}
                                     />
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">Currency</label>
+                                    <label className="input-label">Currency *</label>
                                     <select
                                         className="input"
                                         value={formData.currency}
                                         onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                                        required
                                     >
                                         {state.currencies.map(curr => (
                                             <option key={curr.code} value={curr.code}>
@@ -233,13 +233,14 @@ function QuotationEditor() {
                                     </select>
                                 </div>
                                 <div className="input-group">
-                                    <label className="input-label">Bank Account</label>
+                                    <label className="input-label">Bank Account *</label>
                                     <select
                                         className="input"
                                         value={formData.bankAccountId}
                                         onChange={(e) => setFormData({ ...formData, bankAccountId: e.target.value })}
+                                        required
                                     >
-                                        <option value="">Select bank account (optional)</option>
+                                        <option value="">Select bank account</option>
                                         {bankAccounts.map(bank => (
                                             <option key={bank.id} value={bank.id}>
                                                 {bank.bankName} - ****{bank.accountNumber.slice(-4)} ({bank.currency})
@@ -309,47 +310,55 @@ function QuotationEditor() {
                         <div className="form-section">
                             <div className="form-grid">
                                 <div className="input-group">
-                                    <label className="checkbox-label">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.enableTax}
-                                            onChange={(e) => setFormData({ ...formData, enableTax: e.target.checked })}
-                                        />
-                                        Apply Tax
-                                    </label>
+                                    <div className="toggle-group">
+                                        <span className="toggle-label">Apply Tax</span>
+                                        <button
+                                            type="button"
+                                            className={`toggle-switch ${formData.enableTax ? 'active' : ''}`}
+                                            onClick={() => setFormData({ ...formData, enableTax: !formData.enableTax })}
+                                        >
+                                            <span className="toggle-slider"></span>
+                                        </button>
+                                    </div>
                                     {formData.enableTax && (
-                                        <input
-                                            type="number"
-                                            className="input"
-                                            min="0"
-                                            max="100"
-                                            placeholder="Tax Rate (%)"
-                                            value={formData.taxRate}
-                                            onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })}
-                                            style={{ marginTop: '8px' }}
-                                        />
+                                        <div className="toggle-input-row">
+                                            <input
+                                                type="number"
+                                                className="input"
+                                                min="0"
+                                                max="100"
+                                                placeholder="Tax Rate (%)"
+                                                value={formData.taxRate}
+                                                onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })}
+                                            />
+                                            <span className="input-suffix">%</span>
+                                        </div>
                                     )}
                                 </div>
                                 <div className="input-group">
-                                    <label className="checkbox-label">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.enableDiscount}
-                                            onChange={(e) => setFormData({ ...formData, enableDiscount: e.target.checked })}
-                                        />
-                                        Apply Discount
-                                    </label>
+                                    <div className="toggle-group">
+                                        <span className="toggle-label">Apply Discount</span>
+                                        <button
+                                            type="button"
+                                            className={`toggle-switch ${formData.enableDiscount ? 'active' : ''}`}
+                                            onClick={() => setFormData({ ...formData, enableDiscount: !formData.enableDiscount })}
+                                        >
+                                            <span className="toggle-slider"></span>
+                                        </button>
+                                    </div>
                                     {formData.enableDiscount && (
-                                        <input
-                                            type="number"
-                                            className="input"
-                                            min="0"
-                                            max="100"
-                                            placeholder="Discount (%)"
-                                            value={formData.discount}
-                                            onChange={(e) => setFormData({ ...formData, discount: parseFloat(e.target.value) || 0 })}
-                                            style={{ marginTop: '8px' }}
-                                        />
+                                        <div className="toggle-input-row">
+                                            <input
+                                                type="number"
+                                                className="input"
+                                                min="0"
+                                                max="100"
+                                                placeholder="Discount (%)"
+                                                value={formData.discount}
+                                                onChange={(e) => setFormData({ ...formData, discount: parseFloat(e.target.value) || 0 })}
+                                            />
+                                            <span className="input-suffix">%</span>
+                                        </div>
                                     )}
                                 </div>
                                 <div className="input-group full-width">

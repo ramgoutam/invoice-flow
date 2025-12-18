@@ -133,12 +133,23 @@ export function AppProvider({ children }) {
 
     try {
       switch (type) {
-        case 'ADD_CLIENT':
-          await supabase.from('clients').insert({ ...payload, user_id: userId });
+        case 'ADD_CLIENT': {
+          const { secondaryPhone, ...clientData } = payload;
+          await supabase.from('clients').insert({
+            ...clientData,
+            secondary_phone: secondaryPhone,
+            user_id: userId
+          });
           break;
-        case 'UPDATE_CLIENT':
-          await supabase.from('clients').update(payload).eq('id', payload.id);
+        }
+        case 'UPDATE_CLIENT': {
+          const { secondaryPhone, ...clientData } = payload;
+          await supabase.from('clients').update({
+            ...clientData,
+            secondary_phone: secondaryPhone
+          }).eq('id', payload.id);
           break;
+        }
         case 'DELETE_CLIENT':
           await supabase.from('clients').delete().eq('id', payload);
           break;
@@ -509,6 +520,12 @@ export function AppProvider({ children }) {
         swiftCode: b.swift_code,
       }));
 
+      // Clients
+      const formattedClients = (clients || []).map(client => ({
+        ...client,
+        secondaryPhone: client.secondary_phone
+      }));
+
       // Merge Settings
       const loadedSettings = { ...initialState.settings, ...(profile?.settings || {}) };
       if (profile) {
@@ -522,7 +539,7 @@ export function AppProvider({ children }) {
       dispatch({
         type: 'LOAD_DATA',
         payload: {
-          clients: clients || [],
+          clients: formattedClients,
           invoices: formattedInvoices,
           quotations: formattedQuotations,
           expenses: expenses || [],
