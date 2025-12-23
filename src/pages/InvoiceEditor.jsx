@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext';
 import Header from '../components/Header';
 import CustomDatePicker from '../components/CustomDatePicker';
-import { ArrowLeft, Save, Send, Plus, Trash2, Download, Printer, Settings } from 'lucide-react';
+import { ArrowLeft, Save, Send, Plus, Trash2, Download, Printer, Settings, X } from 'lucide-react';
 import { formatCurrency, formatDate, generateInvoiceNumber, calculateInvoiceTotals, getInitials } from '../utils/helpers';
 import { invoiceTemplates, getTemplateComponent } from '../components/InvoiceTemplates';
 import { v4 as uuidv4 } from 'uuid';
@@ -39,6 +39,82 @@ function InvoiceEditor() {
         notes: 'Thank you for your business!',
         billingType: 'quantity', // 'quantity' or 'hourly'
     });
+
+    // New Client Modal State
+    const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+    const [newClient, setNewClient] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        secondaryPhone: '',
+        address: '',
+        notes: ''
+    });
+
+    const handleClientChange = (e) => {
+        const value = e.target.value;
+        if (value === 'add_new') {
+            setIsClientModalOpen(true);
+        } else {
+            setFormData({ ...formData, clientId: value });
+        }
+    };
+
+    const handleCreateClient = (e) => {
+        e.preventDefault();
+        const newClientId = uuidv4();
+        const clientPayload = { ...newClient, id: newClientId };
+        dispatch({ type: 'ADD_CLIENT', payload: clientPayload });
+        setFormData({ ...formData, clientId: newClientId });
+        setIsClientModalOpen(false);
+        setNewClient({
+            name: '',
+            email: '',
+            phone: '',
+            secondaryPhone: '',
+            address: '',
+            notes: ''
+        });
+    };
+
+    // New Bank Modal State
+    const [isBankModalOpen, setIsBankModalOpen] = useState(false);
+    const [newBank, setNewBank] = useState({
+        bankName: '',
+        accountName: '',
+        accountNumber: '',
+        routingNumber: '',
+        swiftCode: '',
+        iban: '',
+        currency: settings.defaultCurrency
+    });
+
+    const handleBankChange = (e) => {
+        const value = e.target.value;
+        if (value === 'add_new') {
+            setIsBankModalOpen(true);
+        } else {
+            setFormData({ ...formData, bankAccountId: value });
+        }
+    };
+
+    const handleCreateBank = (e) => {
+        e.preventDefault();
+        const newBankId = uuidv4();
+        const bankPayload = { ...newBank, id: newBankId };
+        dispatch({ type: 'ADD_BANK_ACCOUNT', payload: bankPayload });
+        setFormData({ ...formData, bankAccountId: newBankId });
+        setIsBankModalOpen(false);
+        setNewBank({
+            bankName: '',
+            accountName: '',
+            accountNumber: '',
+            routingNumber: '',
+            swiftCode: '',
+            iban: '',
+            currency: settings.defaultCurrency
+        });
+    };
 
     const paymentTermsOptions = [
         { value: 0, label: 'Due on Receipt' },
@@ -236,10 +312,12 @@ function InvoiceEditor() {
                                     <select
                                         className="input"
                                         value={formData.clientId}
-                                        onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
+                                        onChange={handleClientChange}
                                         required
                                     >
                                         <option value="">Select a client</option>
+                                        <option value="add_new" className="text-primary font-medium">+ Add New Client</option>
+                                        <option disabled>----------------</option>
                                         {clients.map(client => (
                                             <option key={client.id} value={client.id}>{client.name}</option>
                                         ))}
@@ -301,10 +379,12 @@ function InvoiceEditor() {
                                     <select
                                         className="input"
                                         value={formData.bankAccountId}
-                                        onChange={(e) => setFormData({ ...formData, bankAccountId: e.target.value })}
+                                        onChange={handleBankChange}
                                         required
                                     >
                                         <option value="">Select bank account</option>
+                                        <option value="add_new" className="text-primary font-medium">+ Add New Bank Account</option>
+                                        <option disabled>----------------</option>
                                         {bankAccounts.map(bank => (
                                             <option key={bank.id} value={bank.id}>
                                                 {bank.bankName} - ****{bank.accountNumber.slice(-4)} ({bank.currency})
@@ -508,6 +588,200 @@ function InvoiceEditor() {
                     </div>
                 </div>
             </div>
+            {/* New Client Modal */}
+            {isClientModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsClientModalOpen(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">Add New Client</h3>
+                            <button className="btn-icon" onClick={() => setIsClientModalOpen(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleCreateClient}>
+                            <div className="modal-body">
+                                <div className="form-grid">
+                                    <div className="input-group">
+                                        <label className="input-label">Name *</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Client name"
+                                            value={newClient.name}
+                                            onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Email *</label>
+                                        <input
+                                            type="email"
+                                            className="input"
+                                            placeholder="client@example.com"
+                                            value={newClient.email}
+                                            onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Phone</label>
+                                        <input
+                                            type="tel"
+                                            className="input"
+                                            placeholder="+1 (555) 000-0000"
+                                            value={newClient.phone}
+                                            onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Secondary Phone</label>
+                                        <input
+                                            type="tel"
+                                            className="input"
+                                            placeholder="+1 (555) 000-0000"
+                                            value={newClient.secondaryPhone}
+                                            onChange={(e) => setNewClient({ ...newClient, secondaryPhone: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group full-width">
+                                        <label className="input-label">Address</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="123 Main St, City, State"
+                                            value={newClient.address}
+                                            onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group full-width">
+                                        <label className="input-label">Notes</label>
+                                        <textarea
+                                            className="input"
+                                            placeholder="Additional notes..."
+                                            value={newClient.notes}
+                                            onChange={(e) => setNewClient({ ...newClient, notes: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setIsClientModalOpen(false)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Add Client
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* New Bank Modal */}
+            {isBankModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsBankModalOpen(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">Add New Bank Account</h3>
+                            <button className="btn-icon" onClick={() => setIsBankModalOpen(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleCreateBank}>
+                            <div className="modal-body">
+                                <div className="form-grid">
+                                    <div className="input-group">
+                                        <label className="input-label">Bank Name *</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Bank Name"
+                                            value={newBank.bankName}
+                                            onChange={(e) => setNewBank({ ...newBank, bankName: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Account Name *</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Account Holder Name"
+                                            value={newBank.accountName}
+                                            onChange={(e) => setNewBank({ ...newBank, accountName: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Account Number *</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Account Number"
+                                            value={newBank.accountNumber}
+                                            onChange={(e) => setNewBank({ ...newBank, accountNumber: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Routing Number</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Routing Number"
+                                            value={newBank.routingNumber}
+                                            onChange={(e) => setNewBank({ ...newBank, routingNumber: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">SWIFT / BIC</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="SWIFT Code"
+                                            value={newBank.swiftCode}
+                                            onChange={(e) => setNewBank({ ...newBank, swiftCode: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">IBAN</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="IBAN"
+                                            value={newBank.iban}
+                                            onChange={(e) => setNewBank({ ...newBank, iban: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="input-group">
+                                        <label className="input-label">Currency *</label>
+                                        <select
+                                            className="input"
+                                            value={newBank.currency}
+                                            onChange={(e) => setNewBank({ ...newBank, currency: e.target.value })}
+                                            required
+                                        >
+                                            {state.currencies.map(curr => (
+                                                <option key={curr.code} value={curr.code}>
+                                                    {curr.symbol} {curr.code} - {curr.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setIsBankModalOpen(false)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Add Bank Account
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

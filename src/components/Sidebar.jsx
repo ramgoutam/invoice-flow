@@ -100,6 +100,11 @@ function Sidebar() {
                             </div>
                         )}
                     </div>
+                    {!isCollapsed && (
+                        <div className="sidebar-credits">
+                            Made with ❤️ by <a href="https://www.videctech.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 'bold' }}>VIDEC</a>
+                        </div>
+                    )}
                 </div>
             </aside>
 
