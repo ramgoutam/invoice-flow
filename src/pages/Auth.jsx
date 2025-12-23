@@ -127,6 +127,10 @@ export default function Auth() {
                             {isSignUp ? 'Sign In' : 'Sign Up'}
                         </button>
                     </div>
+
+                    <div className="auth-credits">
+                        Made with ❤️ by <a href="https://www.videctech.in" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>VIDEC</a>
+                    </div>
                 </div>
             </div>
         </div>

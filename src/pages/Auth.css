@@ -238,6 +238,14 @@
     text-decoration: underline;
 }
 
+.auth-credits {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .auth-card {
